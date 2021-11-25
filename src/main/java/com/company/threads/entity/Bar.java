@@ -13,6 +13,9 @@ public class Bar {
     private static int visitors=0;
     private static int queue=0;
 
+    private Bar() {
+    }
+
     public static Bar getInstance(){
         if(!flag.get()){
             try{
@@ -28,20 +31,16 @@ public class Bar {
         return instance;
     }
 
-    public static int getVisitors() {
+    public int getVisitors() {
         return visitors;
     }
 
-    public static int getQueue() {
+    public int getQueue() {
         return queue;
     }
 
     public void takeHookah(){
         visitors++;
-    }
-
-    public int gerNumberOfHookah(){
-        return visitors;
     }
 
     public void takeLine(){
