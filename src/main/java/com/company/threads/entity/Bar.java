@@ -5,8 +5,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Bar {
-    private static final int HOOKAH_MAX=5;
-    private static final int QUEUE_MAX_SIZE=10;
+    public static final int HOOKAH_MAX=5;
+    public static final int QUEUE_MAX_SIZE=10;
     private static Bar instance;
     private static AtomicBoolean flag=new AtomicBoolean(false);
     private static ReentrantLock lock=new ReentrantLock();
