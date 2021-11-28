@@ -15,7 +15,7 @@ public class Main {
     private final static Logger logger= LogManager.getLogger();
     public static void main(String[] args) {
         ClassLoader loader=Main.class.getClassLoader();
-        ExecutorService service= Executors.newFixedThreadPool(10);
+        ExecutorService service= Executors.newFixedThreadPool(15);
         try {
             List<Client> clients=new ClientCreator().fill(new Reader().read(loader.getResource("data/info.txt").toURI()));
             for(Client object:clients){

@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Bar {
     public static final int HOOKAH_MAX=5;
-    public static final int QUEUE_MAX_SIZE=10;
+    public static final int QUEUE_MAX_SIZE=5;
     private static Bar instance;
     private static AtomicBoolean flag=new AtomicBoolean(false);
     private static ReentrantLock lock=new ReentrantLock();

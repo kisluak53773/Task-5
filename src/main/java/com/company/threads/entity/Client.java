@@ -3,7 +3,6 @@ package com.company.threads.entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -13,15 +12,14 @@ public class Client extends Thread{
     private ReentrantLock lock=new ReentrantLock();
     private Condition condition=lock.newCondition();
     private final static Logger logger= LogManager.getLogger();
-    private final int friendsAmount;
+    private final boolean lastFriend;
     private final boolean withFriends;
     private Bar bar=Bar.getInstance();
     private boolean visiting=true;
-    private static CountDownLatch latch;
     private static AtomicBoolean flag=new AtomicBoolean(false);
 
-    public Client(int friendsAmount, boolean withFriends) {
-        this.friendsAmount = friendsAmount;
+    public Client(boolean lastFriend, boolean withFriends) {
+        this.lastFriend = lastFriend;
         this.withFriends = withFriends;
     }
 
@@ -33,6 +31,7 @@ public class Client extends Thread{
             e.printStackTrace();
         }
         logger.info("Paying and leaving");
+        visiting=false;
     }
 
     private void takeTable(){
@@ -68,12 +67,19 @@ public class Client extends Thread{
         }
     }
 
-    public void enterTheBar(){
+    private void enterTheBar(){
         try {
             lock.lock();
             while (visiting) {
                 if (bar.getVisitors() < Bar.HOOKAH_MAX) {
-                    takeTable();
+                    if(withFriends && !lastFriend){
+                        withFriend();
+                    }else if(lastFriend){
+                        logger.info("Last friend");
+                        takeTable();
+                    }else {
+                        takeTable();
+                    }
                 } else if (bar.getQueue() < Bar.QUEUE_MAX_SIZE) {
                     takeLine();
                 } else {

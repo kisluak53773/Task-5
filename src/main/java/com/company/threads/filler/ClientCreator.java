@@ -14,7 +14,7 @@ public class ClientCreator {
             buffer.add(str.split(STRING_DELIMITER));
         }
         for(int i=0,c=0;i<buffer.size();i++){
-            clientList.add(new Client(Integer.parseInt(buffer.get(i)[c]),Boolean.parseBoolean(buffer.get(i)[c+1])));
+            clientList.add(new Client(Boolean.parseBoolean(buffer.get(i)[c]),Boolean.parseBoolean(buffer.get(i)[c+1])));
         }
         return clientList;
     }
