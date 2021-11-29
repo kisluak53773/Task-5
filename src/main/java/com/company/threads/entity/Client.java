@@ -1,5 +1,7 @@
 package com.company.threads.entity;
 
+import com.company.threads.entity.impl.TakeTable;
+import com.company.threads.entity.impl.WithFriends;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,6 +16,7 @@ public class Client extends Thread{
     private final static Logger logger= LogManager.getLogger();
     private final boolean lastFriend;
     private final boolean withFriends;
+    private ClientStatus status;
     private Bar bar=Bar.getInstance();
     private boolean visiting=true;
     private static AtomicBoolean flag=new AtomicBoolean(false);
@@ -23,28 +26,8 @@ public class Client extends Thread{
         this.withFriends = withFriends;
     }
 
-    private void withFriend(){
-        logger.info("Smoke with friend");
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        logger.info("Paying and leaving");
-        visiting=false;
-    }
-
-    private void takeTable(){
-        bar.takeHookah();
-        logger.info("Smoking");
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        bar.payBill();
-        logger.info("Paying and leaving");
-        visiting=false;
+    private void setStatus(ClientStatus status){
+        this.status=status;
     }
 
     private void takeLine(){
@@ -73,12 +56,18 @@ public class Client extends Thread{
             while (visiting) {
                 if (bar.getVisitors() < Bar.HOOKAH_MAX) {
                     if(withFriends && !lastFriend){
-                        withFriend();
+                        setStatus(new WithFriends());
+                        doAction();
+                        visiting=false;
                     }else if(lastFriend){
                         logger.info("Last friend");
-                        takeTable();
+                        setStatus(new TakeTable());
+                        doAction();
+                        visiting=false;
                     }else {
-                        takeTable();
+                        setStatus(new TakeTable());
+                        doAction();
+                        visiting=false;
                     }
                 } else if (bar.getQueue() < Bar.QUEUE_MAX_SIZE) {
                     takeLine();
@@ -89,6 +78,10 @@ public class Client extends Thread{
         } finally {
             lock.unlock();
         }
+    }
+
+    private void doAction(){
+        status.doAction();
     }
 
     @Override
