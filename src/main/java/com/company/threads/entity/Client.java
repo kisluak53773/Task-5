@@ -1,6 +1,8 @@
 package com.company.threads.entity;
 
+import com.company.threads.entity.impl.TakeQueue;
 import com.company.threads.entity.impl.TakeTable;
+import com.company.threads.entity.impl.WaitOutside;
 import com.company.threads.entity.impl.WithFriends;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,26 +32,6 @@ public class Client extends Thread{
         this.status=status;
     }
 
-    private void takeLine(){
-        bar.takeLine();
-        logger.info("Waiting inside");
-        try {
-            condition.await(1,TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        bar.leaveQueue();
-    }
-
-    private void waitingOutside(){
-        logger.info("Waiting outside");
-        try {
-            condition.await(1,TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void enterTheBar(){
         try {
             lock.lock();
@@ -70,9 +52,11 @@ public class Client extends Thread{
                         visiting=false;
                     }
                 } else if (bar.getQueue() < Bar.QUEUE_MAX_SIZE) {
-                    takeLine();
+                    setStatus(new TakeQueue());
+                    doAction();
                 } else {
-                    waitingOutside();
+                    setStatus(new WaitOutside());
+                    doAction();
                 }
             }
         } finally {
